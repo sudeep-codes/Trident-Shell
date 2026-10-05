@@ -1,0 +1,1 @@
+echo a | wc -c

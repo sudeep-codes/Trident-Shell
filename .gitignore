@@ -1,0 +1,7 @@
+build/
+nsh
+*.o
+*.log
+*.out
+.vscode/
+.idea/
