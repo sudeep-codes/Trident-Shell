@@ -2,8 +2,20 @@
 #include <signal.h>
 #include <stddef.h>
 
-/* TODO (Person 3): sigaction setup, SIGCHLD handler. See docs/SIGNALS_AND_JOBS.md */
+volatile sig_atomic_t g_sigchld_pending = 0;
+
+static void sigchld_handler(int sig) {
+    (void)sig;
+    g_sigchld_pending = 1;
+}
+
 void signals_init(void) {
+    struct sigaction sa;
+    sa.sa_handler = sigchld_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGCHLD, &sa, NULL);
+
     signal(SIGINT, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
     signal(SIGTTOU, SIG_IGN);
@@ -15,4 +27,5 @@ void signals_reset_child(void) {
     signal(SIGTSTP, SIG_DFL);
     signal(SIGTTOU, SIG_DFL);
     signal(SIGTTIN, SIG_DFL);
+    signal(SIGCHLD, SIG_DFL);
 }

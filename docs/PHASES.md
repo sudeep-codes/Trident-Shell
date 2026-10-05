@@ -1,4 +1,4 @@
-# PHASES — nsh development plan
+# PHASES — Trident-Shell development plan
 
 Work is organized by **phase**, not by calendar. A phase is finished only when its **exit criteria** are met; do not start the next phase's dependent work before that. Tasks within a phase run in parallel across the three people.
 
