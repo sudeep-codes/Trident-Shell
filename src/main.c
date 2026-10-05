@@ -6,6 +6,7 @@
 #include "parser.h"
 #include "executor.h"
 #include "signals.h"
+#include <unistd.h>
 
 /* REPL skeleton. Currently every line is a "not implemented" stub. */
 int main(void) {
@@ -13,16 +14,22 @@ int main(void) {
     size_t cap = 0;
 
     signals_init();
+    int interactive = isatty(STDIN_FILENO);
     for (;;) {
-        fputs("nsh> ", stdout);
-        fflush(stdout);
-        if (getline(&line, &cap, stdin) < 0) { putchar('\n'); break; }
+        if (interactive) {
+            fputs("nsh> ", stdout);
+            fflush(stdout);
+        }
+        if (getline(&line, &cap, stdin) < 0) {
+            if (interactive) putchar('\n');
+            break;
+        }
         line[strcspn(line, "\n")] = '\0';
         if (line[0] == '\0') continue;
 
         TokenList toks;
         Pipeline  pl;
-        if (lex(line, &toks) < 0) { fputs("nsh: not implemented yet\n", stderr); continue; }
+        if (lex(line, &toks) < 0) { continue; }
         if (expand_tokens(&toks) == 0 && parse(&toks, &pl) == 0) {
             g_last_status = execute(&pl);
             pipeline_free(&pl);
